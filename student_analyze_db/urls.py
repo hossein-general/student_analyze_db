@@ -24,4 +24,6 @@ urlpatterns = [
     path("", include("student_analyze.urls")),
     path("1", views.say_hello),
     path("2", views.say_hello2),
+    path('test', views.test),
+    path('all_person', views.get_all_person),    
 ]
