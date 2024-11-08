@@ -25,5 +25,9 @@ urlpatterns = [
     path("1", views.say_hello),
     path("2", views.say_hello2),
     path('test', views.test),
-    path('all_person', views.get_all_person),    
+    path('testing', views.testing),
+    path("contact/<str:id>/<str:test>", views.contactinside, name='home'),
+    # ------------------------------------------------
+    path('show/<str:the_model>/<str:conditions>',views.show, name= 'nothome'),
+
 ]
