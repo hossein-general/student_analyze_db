@@ -1,3 +1,27 @@
+# Added for restframework and api's
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+# importing serializers
+from .api.serializers import (
+    PersonSerializer,
+    GenderSerializer,
+    ESSerializer,
+    EGdSerializer,
+    EGpSerializer,
+    LessonSerializer,
+    SchoolSerializer,
+    CRoomSerializer,
+    StudentSerializer,
+    TeacherSerializer,
+    CGroupSerializer,
+)
+
+# after adding the GET and POST api functions (those dont need these)
+from rest_framework import status
+
+
+# -------------------------------------------
+
 from django.shortcuts import render, HttpResponse
 
 # for json response
@@ -14,6 +38,8 @@ from .models import (
     School,
     Student,
     Teacher,
+    ClassRoom,
+    ClassGroup,
 )
 
 # # importin json to work with it
@@ -131,3 +157,191 @@ def show(request, the_model, conditions):
             test = {"name__icontains": "h"}
             resault = list(Teacher.objects.all().filter(**params).values())
             return JsonResponse(resault, safe=False)
+
+        case "croom":
+            test = {"name__icontains": "h"}
+            resault = list(ClassGroup.objects.all().filter(**params).values())
+            return JsonResponse(resault, safe=False)
+
+        case "cgroup":
+            test = {"name__icontains": "h"}
+            resault = list(ClassGroup.objects.all().filter(**params).values())
+            return JsonResponse(resault, safe=False)
+
+# -----------------------------------------------------
+# region GET
+@api_view(['GET'])
+def get_model(request, the_model):
+    match the_model:
+        case "person":
+            item_list = Person.objects.all()
+            serializer = PersonSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "gender":
+            item_list = Gender.objects.all()
+            serializer = GenderSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "es":
+            item_list = EducationState.objects.all()
+            serializer = ESSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "egd":
+            item_list = EducationGrade.objects.all()
+            serializer = EGdSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "egp":
+            item_list = EducationGroup.objects.all()
+            serializer = EGpSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "lesson":
+            item_list = Lesson.objects.all()
+            serializer = LessonSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "school":
+            item_list = School.objects.all()
+            serializer = SchoolSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "student":
+            item_list = Student.objects.all()
+            serializer = StudentSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+        case "teacher":
+            item_list = Teacher.objects.all()
+            serializer = TeacherSerializer(item_list, many=True)
+            return Response(serializer.data)
+        
+        case "croom":
+            item_list = ClassRoom.objects.all()
+            serializer = CRoomSerializer(item_list, many=True)
+            return Response(serializer.data)
+        
+        case "cgroup":
+            item_list = ClassGroup.objects.all()
+            serializer = CGroupSerializer(item_list, many=True)
+            return Response(serializer.data)
+
+# endregion
+    
+
+# region POST
+@api_view(['POST'])
+def add_model(request, the_model):
+    match the_model:
+        case "person":
+            serializer = PersonSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "gender":
+            serializer = GenderSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "es":
+            serializer = ESSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "egd":
+            serializer = EGdSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "egp":
+            serializer = EGpSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "lesson":
+            serializer = LessonSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "school":
+            serializer = SchoolSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "student":
+            serializer = StudentSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        case "teacher":
+            serializer = TeacherSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        case "croom":
+            serializer = CRoomSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        case "cgroup":
+            serializer = CGroupSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# endregion 
+
+
+# region DELETE
+@api_view(['GET', 'PUT', 'DELETE'])
+def modify_model(request, pk):
+    # first trying to find that specific person
+    try:
+        the_es = EducationState.objects.get(pk=pk)
+    except EducationState.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ESSerializer(the_es)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ESSerializer(the_es, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            
+        
+    elif request.method == 'DELETE':
+        the_es.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    
+
+
+
