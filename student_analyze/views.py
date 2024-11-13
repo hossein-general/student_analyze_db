@@ -211,7 +211,8 @@ def modify_model(request, the_model, pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = model['serializer'](the_item, data=request.data)
+        # NOTE if we dont pass 'the_item', the .save() will create a new instance. we pass it so it would update the existing one
+        serializer = model['serializer'](the_item, data=request.data)   
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
