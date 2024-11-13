@@ -172,61 +172,11 @@ def show(request, the_model, conditions):
 # region GET
 @api_view(['GET'])
 def get_model(request, the_model):
-    match the_model:
-        case "person":
-            item_list = Person.objects.all()
-            serializer = PersonSerializer(item_list, many=True)
-            return Response(serializer.data)
+    model = model_resolver(the_model)
 
-        case "gender":
-            item_list = Gender.objects.all()
-            serializer = GenderSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "es":
-            item_list = EducationState.objects.all()
-            serializer = ESSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "egd":
-            item_list = EducationGrade.objects.all()
-            serializer = EGdSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "egp":
-            item_list = EducationGroup.objects.all()
-            serializer = EGpSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "lesson":
-            item_list = Lesson.objects.all()
-            serializer = LessonSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "school":
-            item_list = School.objects.all()
-            serializer = SchoolSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "student":
-            item_list = Student.objects.all()
-            serializer = StudentSerializer(item_list, many=True)
-            return Response(serializer.data)
-
-        case "teacher":
-            item_list = Teacher.objects.all()
-            serializer = TeacherSerializer(item_list, many=True)
-            return Response(serializer.data)
-        
-        case "croom":
-            item_list = ClassRoom.objects.all()
-            serializer = CRoomSerializer(item_list, many=True)
-            return Response(serializer.data)
-        
-        case "cgroup":
-            item_list = ClassGroup.objects.all()
-            serializer = CGroupSerializer(item_list, many=True)
-            return Response(serializer.data)
+    item_list = model['obj'].objects.all()
+    serializer = model['serializer'](item_list, many=True)
+    return Response(serializer.data)
 
 # endregion
     
@@ -234,114 +184,101 @@ def get_model(request, the_model):
 # region POST
 @api_view(['POST'])
 def add_model(request, the_model):
-    match the_model:
-        case "person":
-            serializer = PersonSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "gender":
-            serializer = GenderSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "es":
-            serializer = ESSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "egd":
-            serializer = EGdSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "egp":
-            serializer = EGpSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "lesson":
-            serializer = LessonSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "school":
-            serializer = SchoolSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "student":
-            serializer = StudentSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        case "teacher":
-            serializer = TeacherSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        case "croom":
-            serializer = CRoomSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        case "cgroup":
-            serializer = CGroupSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    model = model_resolver(the_model)
+    
+    serializer = model['serializer'](data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 # endregion 
 
 
 # region DELETE
 @api_view(['GET', 'PUT', 'DELETE'])
-def modify_model(request, pk):
+def modify_model(request, the_model, pk):
+    model = model_resolver(the_model)
+
     # first trying to find that specific person
     try:
-        the_es = EducationState.objects.get(pk=pk)
+        the_item = model['obj'].objects.get(pk=pk)
     except EducationState.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ESSerializer(the_es)
+        serializer = model['serializer'](the_item)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = ESSerializer(the_es, data=request.data)
+        serializer = model['serializer'](the_item, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            
         
     elif request.method == 'DELETE':
-        the_es.delete()
+        the_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     
 
 
+# region model resolver
+def model_resolver(model_name:str):
+    the_model = {}
+    match model_name:
+        case "person":
+            the_model['obj'] = Person
+            the_model['serializer'] = PersonSerializer
+            return the_model
 
+        case "gender":
+            the_model['obj'] = Gender
+            the_model['serializer'] = GenderSerializer
+            return the_model
+
+        case "es":
+            the_model['obj'] = EducationState
+            the_model['serializer'] = ESSerializer
+            return the_model
+
+        case "egd":
+            the_model['obj'] = EducationGrade
+            the_model['serializer'] = EGdSerializer
+            return the_model
+
+        case "egp":
+            the_model['obj'] = EducationGroup
+            the_model['serializer'] = EGpSerializer
+            return the_model
+
+        case "lesson":
+            the_model['obj'] = Lesson
+            the_model['serializer'] = LessonSerializer 
+            return the_model
+
+        case "school":
+            the_model['obj'] = School
+            the_model['serializer'] = SchoolSerializer 
+            return the_model
+
+        case "student":
+            the_model['obj'] = Student
+            the_model['serializer'] = StudentSerializer
+            return the_model
+
+        case "teacher":
+            the_model['obj'] = Teacher
+            the_model['serializer'] = TeacherSerializer
+            return the_model
+        
+        case "croom":
+            the_model['obj'] = ClassRoom
+            the_model['serializer'] = CRoomSerializer
+            return the_model
+        
+        case "cgroup":
+            the_model['obj'] = ClassGroup
+            the_model['serializer'] = CGroupSerializer
+            return the_model
